@@ -10,12 +10,14 @@ BASE_DIR = Path.cwd()
 def summarize_description(text: str) -> str:
     prompt = f"""
 You are a YouTube Shorts content assistant. Given the following frame-by-frame video description, write a short, 
-engaging YouTube Shorts video description and suggest 3-5 relevant hashtags. Do not include user pleasantries or any other prompt. Just provide the output in the specified format.
+engaging YouTube Shorts video title and description and suggest 3-5 relevant hashtags. Do not include user pleasantries or any other prompt. Just provide the output in the specified format.
 
 Descriptions:
 {text}
 
 Output format:
+<title>
+
 <short description>
 
 #tag1 #tag2 #tag3
