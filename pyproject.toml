@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "youtube-description-generator"
+version = "1.0.0"
+description = "Generate YouTube Shorts titles, descriptions, and hashtags from .mp4 files using computer vision and a local LLM"
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "willtheorangeguy" }]
+requires-python = ">=3.9"
+keywords = ["youtube", "shorts", "video", "description", "blip", "ollama"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Video",
+]
+dependencies = [
+    "opencv-python",
+    "pillow",
+    "transformers",
+    "torch",
+]
+
+[project.urls]
+Homepage = "https://github.com/willtheorangeguy/YouTube-Description-Generator"
+Issues = "https://github.com/willtheorangeguy/YouTube-Description-Generator/issues"
+
+[project.scripts]
+ytdg = "youtube_description_generator.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
