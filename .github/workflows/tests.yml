@@ -23,6 +23,13 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     
+    # Heavy dependencies (torch, opencv, transformers) are mocked in the
+    # tests, so the package is installed without them to keep CI fast.
+    - name: Install package
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e . --no-deps
+
     - name: Run tests
       run: |
         python -m unittest discover -s tests -v
