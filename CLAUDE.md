@@ -43,6 +43,7 @@ This is a four-step pipeline CLI that generates YouTube Shorts descriptions from
 **`cli.py`** wires these into `ytdg` subcommands (`extract`, `describe`, `summarize`, `collect`, `run`). It lazy-imports each module's handler so heavy deps are only loaded when that step is actually invoked.
 
 **Key design constraints:**
+
 - `describe_frames.py` caches the BLIP model in module-level globals (`_model`, `_processor`) — loaded once per process, supports optional CUDA.
 - `describe_frames.py` skips frame folders that already contain a `description.txt` (idempotent re-runs).
 - `summarize_descriptions.py` calls Ollama via `subprocess` — Ollama must be running locally with `llama3.1:8b` pulled. The prompt is hardcoded in that file; edit it there to change output tone/format.
