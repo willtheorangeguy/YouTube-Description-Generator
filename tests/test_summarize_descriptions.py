@@ -25,7 +25,9 @@ class TestSummarizeDescriptions(unittest.TestCase):
         self.assertEqual(result, "Test Title\n\nTest Description\n\n#test #video")
         mock_run.assert_called_once()
         call_args = mock_run.call_args
-        self.assertEqual(call_args[0][0][0], "ollama")
+        # argv[0] is resolved via shutil.which, so it may be an absolute path
+        # (e.g. C:\...\ollama.exe) rather than the bare name.
+        self.assertEqual(Path(call_args[0][0][0]).stem, "ollama")
         self.assertEqual(call_args[0][0][1], "run")
 
     @patch('youtube_description_generator.summarize_descriptions.subprocess.run')

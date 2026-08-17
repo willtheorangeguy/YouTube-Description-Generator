@@ -1,7 +1,9 @@
 # This module summarizes video descriptions for YouTube Shorts using an Ollama model.
 import os
+import shutil
 from pathlib import Path
-import subprocess
+import subprocess  # nosec B404 - ollama is invoked with a resolved absolute
+                   # path and a list argv; shell=True is never used.
 
 
 # Function to summarize a video description using an Ollama model
@@ -21,11 +23,18 @@ Output format:
 #tag1 #tag2 #tag3
 """.strip() # Edit the prompt as needed
 
-    # Use Ollama (assumes model is already pulled)
-    result = subprocess.run(
-        ["ollama", "run", "llama3.1:8b"],
+    # Use Ollama (assumes model is already pulled). Resolve the binary to an
+    # absolute path so PATH ordering cannot substitute it, and pass a list argv
+    # so the prompt is never shell-interpreted. If it cannot be resolved, fall
+    # back to the bare name so the caller still sees the original
+    # FileNotFoundError rather than a different failure mode.
+    ollama_path = shutil.which("ollama") or "ollama"
+
+    result = subprocess.run(  # nosec B603
+        [ollama_path, "run", "llama3.1:8b"],
         input=prompt.encode("utf-8"),
         capture_output=True,
+        check=False,
     )
 
     if result.returncode != 0:

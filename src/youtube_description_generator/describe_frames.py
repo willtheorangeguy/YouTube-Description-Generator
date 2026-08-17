@@ -10,6 +10,12 @@ _processor = None
 _model = None
 _device = None
 
+_BLIP_MODEL = "Salesforce/blip-image-captioning-base"
+# Pin the model revision so an upstream change to the branch cannot silently
+# swap the weights we execute. Set BLIP_REVISION to an exact commit SHA to
+# lock this down fully; "main" only fixes the ref that gets resolved.
+_BLIP_REVISION = os.environ.get("BLIP_REVISION", "main")
+
 
 # Function to load the BLIP model and processor (once, on first use)
 def _load_model():
@@ -19,8 +25,12 @@ def _load_model():
         from transformers import BlipProcessor, BlipForConditionalGeneration
 
         _device = "cuda" if torch.cuda.is_available() else "cpu"
-        _processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-        _model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base").to(_device)
+        _processor = BlipProcessor.from_pretrained(
+            _BLIP_MODEL, revision=_BLIP_REVISION
+        )
+        _model = BlipForConditionalGeneration.from_pretrained(
+            _BLIP_MODEL, revision=_BLIP_REVISION
+        ).to(_device)
     return _processor, _model, _device
 
 

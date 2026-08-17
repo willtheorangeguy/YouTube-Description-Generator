@@ -38,3 +38,7 @@ ytdg = "youtube_description_generator.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.bandit]
+exclude_dirs = ["tests", "test", ".venv", "venv", "build", "node_modules"]
+skips = ["B101"]
