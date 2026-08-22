@@ -2,7 +2,7 @@
 
 Four independent steps, chained by files on disk rather than by function calls.
 
-```
+```text
 {video}.mp4
    └── extract    → {video}_frames/frame_NNNN.jpg
           └── describe  → {video}_frames/description.txt   (BLIP captions)

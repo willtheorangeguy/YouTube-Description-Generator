@@ -3,7 +3,7 @@
 A four-step pipeline that turns `.mp4` files into upload-ready Shorts text, using two models that
 both run locally.
 
-```
+```text
 src/youtube_description_generator/
 ├── cli.py                     the ytdg command
 ├── extract_frames.py          .mp4 → one JPEG per second

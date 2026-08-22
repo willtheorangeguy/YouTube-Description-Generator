@@ -31,7 +31,7 @@ The first `describe` downloads the BLIP model (~1 GB) from Hugging Face, once.
 
 For `myvideo.mp4`:
 
-```
+```text
 myvideo.mp4
 myvideo_frames/          frame_0000.jpg, frame_0001.jpg, …
 myvideo_frames.txt       the finished title, description, and hashtags

@@ -7,12 +7,11 @@ licensing decision rather than a documentation one.
 Ordered by severity. See [`docs/roadmap.md`](../roadmap.md) for the narrative version,
 which also covers deliberate non-goals.
 
-
 **5 open:** 1 high, 3 medium, 1 low.
 
 ## 1. summarize overwrites the captions it consumed, and describe will not regenerate them
 
-**Severity:** High  
+**Severity:** High
 **Where:** `src/youtube_description_generator/summarize_descriptions.py` -> `process_frame_folders`; `src/youtube_description_generator/describe_frames.py` -> `describe_images_in_folder`
 
 **What:** `process_frame_folders` reads `description.txt`, sends it to Ollama, and writes the result back to the same path: `desc_file.write_text(summarized, encoding="utf-8")`. The BLIP captions are replaced. `describe_images_in_folder` begins with `if output_file.exists(): return`, so it will not recreate them.
@@ -23,7 +22,7 @@ which also covers deliberate non-goals.
 
 ## 2. No timeout on the Ollama subprocess
 
-**Severity:** Medium  
+**Severity:** Medium
 **Where:** `src/youtube_description_generator/summarize_descriptions.py` -> `summarize_description`
 
 **What:** `subprocess.run([ollama_path, "run", "llama3.1:8b"], input=..., capture_output=True, check=False)` -- no `timeout` argument. `capture_output=True` also means nothing is printed while it runs.
@@ -34,7 +33,7 @@ which also covers deliberate non-goals.
 
 ## 3. collect walks every subdirectory, not just *_frames folders
 
-**Severity:** Medium  
+**Severity:** Medium
 **Where:** `src/youtube_description_generator/collect_files.py` -> `collect_descriptions`
 
 **What:** `for folder in sorted(p for p in base_dir.iterdir() if p.is_dir())` -- every immediate subdirectory is checked for a `description.txt` and, if present, the file is **moved** out and renamed. The other three stages all filter on the `_frames` suffix; this one does not. It is a faithful port of `move_files.bat`, which had the same behaviour.
@@ -45,7 +44,7 @@ which also covers deliberate non-goals.
 
 ## 4. The documented output filename does not match what collect produces
 
-**Severity:** Medium  
+**Severity:** Medium
 **Where:** `README.md` (corrected in this pass), `src/youtube_description_generator/collect_files.py` -> `unique_target`
 
 **What:** The README stated the collect step produces `{video}.txt`, in both the step table ('Moves each `description.txt` out of its frame folder, renamed `{video}.txt`') and the command list. `unique_target` builds `base_dir / f"{folder_name}.txt"` from the **folder** name, which is `{video}_frames` -- so the real output is `{video}_frames.txt`. `tests/test_collect_files.py` asserts `video1_frames.txt`, so the behaviour is intended and the documentation was wrong.
@@ -56,7 +55,7 @@ which also covers deliberate non-goals.
 
 ## 5. Frames are reached by seeking rather than read sequentially
 
-**Severity:** Low  
+**Severity:** Low
 **Where:** `src/youtube_description_generator/extract_frames.py` -> `extract_frames`
 
 **What:** For each second, the code does `cap.set(cv2.CAP_PROP_POS_FRAMES, int(second * fps))` then `cap.read()`. `fps` comes from `CAP_PROP_FPS` and the loop runs to `int(total_frames / fps) + 1`.
@@ -64,7 +63,6 @@ which also covers deliberate non-goals.
 **Why it matters:** Seeking to an exact frame is unreliable on long-GOP codecs and variable-frame-rate footage -- screen recordings and phone video are commonly VFR -- because the decoder may land on the nearest keyframe instead. The result is frames that are not one second apart, or duplicates, which silently degrades the captions the whole pipeline is built on. Seeking is also slower than a sequential read for this access pattern. The `+ 1` separately means the final seek usually lands past the end, producing a spurious warning on nearly every video.
 
 **Suggested fix:** Read sequentially and keep every `round(fps)`-th frame, counting as you go. That is both faster and correct for VFR. Drop the `+ 1` while you are there.
-
 
 ---
 
